@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>藥林合作藥局｜線上選品目錄</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body { font-family: 'Noto Sans TC', sans-serif; background-color: #f3f4f6; }
+        
+        /* 隱藏捲軸但保留功能 */
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* 載入動畫 */
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #10B981;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* Modal 動畫 */
+        .modal { transition: opacity 0.25s ease; }
+        body.modal-active { overflow: hidden; }
+
+        /* 簡單的淡入動畫 */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in-up {
+            animation: fadeInUp 0.5s ease-out forwards;
+        }
+    </style>
+</head>
+<body class="text-gray-800 flex flex-col min-h-screen">
+
+    <!-- Navbar -->
+    <nav class="bg-white shadow-md sticky top-0 z-40">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center gap-2">
+                <i class="fa-solid fa-staff-snake text-3xl text-emerald-600"></i>
+                <div>
+                    <h1 class="text-xl font-bold text-gray-800 tracking-wide">藥林合作藥局</h1>
+                    <p class="text-xs text-gray-500">專業藥師 • 用心服務</p>
+                </div>
+            </div>
+            <a href="https://lin.ee/fx7f7sO" target="_blank" class="bg-[#06C755] hover:bg-[#05b54d] text-white px-4 py-2 rounded-full text-sm font-bold flex items-center gap-2 transition-colors">
+                <i class="fa-brands fa-line text-lg"></i>
+                <span class="hidden sm:inline">LINE 諮詢</span>
+            </a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="relative bg-emerald-600 text-white">
+        <div class="absolute inset-0 bg-black opacity-40"></div>
+        <div class="absolute inset-0 bg-[url('https://i.meee.com.tw/qWD4WpV.png')] bg-cover bg-center mix-blend-overlay"></div>
+        <div class="container mx-auto px-4 py-12 relative z-10 text-center">
+            <h2 class="text-3xl md:text-4xl font-bold mb-2 text-shadow">守護全家人的健康</h2>
+            <p class="text-emerald-100 text-lg">嚴選高品質保健食品，提供專業諮詢建議</p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-6 flex-grow">
+        
+        <!-- Loading State -->
+        <div id="loading" class="flex flex-col items-center justify-center py-20">
+            <div class="loader mb-4"></div>
+            <p class="text-gray-500">正在同步雲端資料...</p>
+        </div>
+
+        <!-- Error State -->
+        <div id="error-msg" class="hidden text-center py-20 text-red-500 bg-red-50 rounded-lg border border-red-200">
+            <i class="fa-solid fa-circle-exclamation text-4xl mb-2"></i>
+            <p>資料讀取失敗，請檢查網路或聯繫管理員。</p>
+            <button onclick="location.reload()" class="mt-4 px-4 py-2 bg-gray-200 rounded text-gray-700 hover:bg-gray-300">重試</button>
+        </div>
+
+        <!-- App Container (Hidden until loaded) -->
+        <div id="app-content" class="hidden">
+            
+            <!-- Category Tabs (Sticky under nav) -->
+            <div class="sticky top-[68px] z-30 bg-[#f3f4f6] pt-2 pb-4 -mx-4 px-4 shadow-sm md:shadow-none md:static md:bg-transparent md:mx-0 md:px-0 md:pt-0">
+                <div id="category-container" class="flex gap-2 overflow-x-auto hide-scrollbar pb-1">
+                    <!-- Categories will be injected here -->
+                </div>
+            </div>
+
+            <!-- Product Grid -->
+            <div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 animate-fade-in-up">
+                <!-- Products will be injected here -->
+            </div>
+
+            <!-- Empty State for Category -->
+            <div id="empty-category" class="hidden text-center py-20 text-gray-500">
+                <i class="fa-solid fa-box-open text-4xl mb-2 text-gray-300"></i>
+                <p>此分類目前沒有上架商品</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Location & Contact Footer -->
+    <footer class="bg-gray-800 text-gray-300 py-8 mt-8">
+        <div class="container mx-auto px-4">
+            <div class="grid md:grid-cols-2 gap-8 items-center">
+                <div>
+                    <h3 class="text-white text-lg font-bold mb-4 border-l-4 border-emerald-500 pl-3">聯絡資訊</h3>
+                    <ul class="space-y-3">
+                        <li class="flex items-start gap-3">
+                            <i class="fa-solid fa-location-dot mt-1 text-emerald-400"></i>
+                            <a href="https://maps.app.goo.gl/hyNq7GjFcK4VqGkk8?g_st=il" target="_blank" class="hover:text-white transition">
+                                台南市安平區健康三街168號 (點擊導航)
+                            </a>
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <i class="fa-brands fa-line text-emerald-400"></i>
+                            <a href="https://lin.ee/fx7f7sO" target="_blank" class="hover:text-white transition">LINE 官方帳號諮詢</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="h-48 rounded-lg overflow-hidden bg-gray-700 relative">
+                     <iframe 
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3673.238421869818!2d120.19835837609257!3d22.978641117972017!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x346e76813353e107%3A0x884a27546552a466!2z5YGl5paw6Ieq5bGA!5e0!3m2!1szh-TW!2stw!4v1728469399852!5m2!1szh-TW!2stw" 
+                        width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+                </div>
+            </div>
+            <div class="text-center text-sm text-gray-500 mt-8 border-t border-gray-700 pt-4">
+                &copy; 2025 藥林合作藥局 All Rights Reserved.
+            </div>
+        </div>
+    </footer>
+
+    <!-- Product Detail Modal -->
+    <div id="product-modal" class="modal opacity-0 pointer-events-none fixed w-full h-full top-0 left-0 flex items-center justify-center z-50 px-4">
+        <div class="modal-overlay absolute w-full h-full bg-black opacity-50"></div>
+        
+        <div class="modal-container bg-white w-full max-w-2xl mx-auto rounded-xl shadow-2xl z-50 overflow-y-auto max-h-[90vh] animate-scale-in">
+            <!-- Modal Header -->
+            <div class="flex justify-between items-center p-4 border-b sticky top-0 bg-white z-10">
+                <h3 id="modal-title" class="text-xl font-bold text-emerald-800">產品名稱</h3>
+                <div class="modal-close cursor-pointer z-50 p-2 hover:bg-gray-100 rounded-full transition">
+                    <i class="fa-solid fa-xmark text-xl text-gray-600"></i>
+                </div>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="p-6">
+                <!-- Tags -->
+                <div id="modal-tags" class="flex gap-2 mb-4"></div>
+                
+                <!-- Main Image -->
+                <img id="modal-img-main" src="" alt="" class="w-full h-auto rounded-lg mb-6 object-cover bg-gray-100">
+                
+                <!-- Price Block -->
+                <div class="flex items-end gap-3 mb-6 p-4 bg-emerald-50 rounded-lg border border-emerald-100">
+                    <div class="flex-1">
+                        <p class="text-sm text-gray-500">優惠價格</p>
+                        <div class="flex items-baseline gap-2">
+                            <span class="text-3xl font-bold text-red-600">NT$ <span id="modal-price-sale">0</span></span>
+                            <span class="text-gray-400 line-through text-sm">NT$ <span id="modal-price-original">0</span></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Description -->
+                <div class="mb-8">
+                    <h4 class="font-bold text-gray-700 mb-2 border-l-4 border-emerald-500 pl-2">產品說明</h4>
+                    <p id="modal-desc" class="text-gray-600 leading-relaxed whitespace-pre-line"></p>
+                </div>
+
+                <!-- Detail / Ingredients Images -->
+                <div id="modal-extra-images" class="space-y-4">
+                    <!-- Dynamic Images will be here -->
+                </div>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="p-4 border-t bg-gray-50 text-center">
+                <a href="https://lin.ee/fx7f7sO" target="_blank" class="block w-full bg-[#06C755] hover:bg-[#05b54d] text-white font-bold py-3 px-4 rounded-lg transition shadow-lg">
+                    <i class="fa-brands fa-line mr-2"></i> 私訊藥師下單
+                </a>
+                <p class="text-xs text-gray-400 mt-2">實際價格與庫存請以藥局現場或 LINE 回覆為主</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // ==========================================
+        // 設定區：請在這裡替換您的 Google Apps Script 部署網址
+        // ==========================================
+        
+        // 1. 如果 USE_MOCK_DATA = true，會使用下方的 mockData (測試用)
+        // 2. 如果 USE_MOCK_DATA = false，會從 GOOGLE_SCRIPT_URL 抓取資料 (正式用)
+        const USE_MOCK_DATA = false; 
+        
+        // ★★★ 請將您的 Apps Script 部署網址貼在下方引號中 ★★★
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxbqrtUfJxMH6lX1yaC16fcxdjwHGnRmOmYtHq0baOFik4pzQ4uP-NoNLqtxYsYLemc5A/exec';
+
+        // ==========================================
+        // 模擬資料 (Mock Data) - 當您還沒部署好 Sheet 時先撐著用
+        // ==========================================
+        const mockData = [
+            {
+                id: '1',
+                category: '心血管專區',
+                name: '高單位魚油',
+                description: '嚴選深海魚油，高純度 Omega-3，維持循環順暢的最佳選擇。',
+                original_price: '1200',
+                sale_price: '980',
+                image_main: 'https://i.meee.com.tw/J4qH81B.png',
+                image_detail: '',
+                tags: '熱銷,推薦',
+                status: '上架'
+            },
+            // ... (略過重複的模擬資料以節省空間)
+        ];
+
+        // ==========================================
+        // 應用程式邏輯
+        // ==========================================
+        
+        let allProducts = [];
+        let categories = [];
+        let activeCategory = '';
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            initApp();
+            initModal();
+        });
+
+        async function initApp() {
+            try {
+                let data;
+                
+                if (USE_MOCK_DATA) {
+                    console.log("使用模擬資料模式");
+                    await new Promise(resolve => setTimeout(resolve, 600)); // 假裝讀取中
+                    data = mockData;
+                } else {
+                    console.log("正在連接 Google Sheet API...");
+                    data = await fetchSheetData();
+                }
+
+                if (!Array.isArray(data)) {
+                    throw new Error("API 回傳格式錯誤，必須為陣列");
+                }
+                
+                if (data.length === 0) {
+                    console.warn("API 回傳空陣列");
+                }
+
+                // 1. 過濾出狀態為 '上架' 的商品
+                allProducts = data.filter(p => p.status && p.status.trim() === '上架');
+
+                // 2. 提取所有分類 (Category)
+                const uniqueCats = [...new Set(allProducts.map(p => p.category ? p.category.trim() : '未分類'))];
+                categories = uniqueCats;
+
+                if (categories.length > 0) {
+                    activeCategory = categories[0];
+                    renderTabs();
+                    renderProducts(activeCategory);
+                    
+                    document.getElementById('loading').classList.add('hidden');
+                    document.getElementById('app-content').classList.remove('hidden');
+                } else {
+                    document.getElementById('loading').innerHTML = '<p class="text-gray-500">目前沒有上架商品或資料庫為空</p>';
+                }
+
+            } catch (error) {
+                console.error("初始化錯誤:", error);
+                document.getElementById('loading').classList.add('hidden');
+                document.getElementById('error-msg').classList.remove('hidden');
+                // 在錯誤訊息中顯示詳細資訊方便除錯
+                document.querySelector('#error-msg p').textContent = `資料讀取失敗: ${error.message || '未知錯誤'}`;
+            }
+        }
+
+        // 使用 fetch API 讀取 GAS JSON
+        async function fetchSheetData() {
+            if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL.includes('您的_APPS_SCRIPT')) {
+                throw new Error("請先設定正確的 Apps Script 網址");
+            }
+
+            const response = await fetch(GOOGLE_SCRIPT_URL);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const json = await response.json();
+            return json;
+        }
+
+        // 渲染分類頁籤
+        function renderTabs() {
+            const container = document.getElementById('category-container');
+            container.innerHTML = '';
+
+            categories.forEach(cat => {
+                const btn = document.createElement('button');
+                btn.className = `whitespace-nowrap px-5 py-2 rounded-full text-sm font-bold transition-all duration-300 border-2 ${
+                    cat === activeCategory 
+                    ? 'bg-emerald-100 text-emerald-700 border-emerald-500 shadow-sm' 
+                    : 'bg-white text-gray-600 border-transparent hover:bg-gray-100'
+                }`;
+                btn.textContent = cat;
+                btn.onclick = () => {
+                    activeCategory = cat;
+                    renderTabs(); // 重繪 Tabs 以更新樣式
+                    renderProducts(cat); // 重繪產品
+                };
+                container.appendChild(btn);
+            });
+        }
+
+        // 渲染產品列表
+        function renderProducts(category) {
+            const grid = document.getElementById('product-grid');
+            const emptyState = document.getElementById('empty-category');
+            
+            grid.innerHTML = '';
+            
+            const filtered = allProducts.filter(p => (p.category ? p.category.trim() : '未分類') === category);
+
+            if (filtered.length === 0) {
+                grid.classList.add('hidden');
+                emptyState.classList.remove('hidden');
+                return;
+            }
+
+            grid.classList.remove('hidden');
+            emptyState.classList.add('hidden');
+
+            // 加入小延遲動畫效果
+            filtered.forEach((product, index) => {
+                const card = createProductCard(product);
+                // 讓卡片依序出現
+                card.style.animationDelay = `${index * 50}ms`; 
+                card.classList.add('animate-fade-in-up'); 
+                grid.appendChild(card);
+            });
+        }
+
+        // 建立單個產品卡片 HTML
+        function createProductCard(product) {
+            const div = document.createElement('div');
+            // 初始 opacity 0 配合動畫
+            div.className = 'bg-white rounded-xl shadow-sm hover:shadow-lg transition-shadow duration-300 overflow-hidden group cursor-pointer border border-gray-100 flex flex-col h-full opacity-0 fill-mode-forwards';
+            div.onclick = () => openModal(product);
+
+            let tagsHtml = '';
+            if (product.tags) {
+                const tags = product.tags.split(/,|、/);
+                tags.forEach(tag => {
+                    if(tag.trim()) tagsHtml += `<span class="bg-red-500 text-white text-[10px] px-2 py-1 rounded-sm shadow-sm">${tag.trim()}</span>`;
+                });
+            }
+
+            const imgSrc = product.image_main ? product.image_main : 'https://placehold.co/400x400/eee/999?text=No+Image';
+
+            div.innerHTML = `
+                <div class="relative overflow-hidden aspect-square bg-gray-100">
+                    <img src="${imgSrc}" alt="${product.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                    <div class="absolute top-2 left-2 flex gap-1 flex-wrap">
+                        ${tagsHtml}
+                    </div>
+                </div>
+                <div class="p-4 flex flex-col flex-grow">
+                    <h3 class="font-bold text-gray-800 text-lg mb-1 line-clamp-1">${product.name}</h3>
+                    <p class="text-sm text-gray-500 mb-3 line-clamp-2 flex-grow h-10">${product.description || ''}</p>
+                    
+                    <div class="mt-auto pt-3 border-t border-gray-100 flex items-center justify-between">
+                        <div class="flex flex-col">
+                            <span class="text-xs text-gray-400 line-through">原價 $${product.original_price}</span>
+                            <span class="text-xl font-bold text-red-600">特價 $${product.sale_price}</span>
+                        </div>
+                        <button class="bg-emerald-50 text-emerald-600 w-8 h-8 rounded-full flex items-center justify-center hover:bg-emerald-500 hover:text-white transition-colors shadow-sm">
+                            <i class="fa-solid fa-magnifying-glass-plus"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+            return div;
+        }
+
+        // ==========================================
+        // Modal (彈跳視窗) 邏輯
+        // ==========================================
+        function initModal() {
+            const modal = document.getElementById('product-modal');
+            const overlay = modal.querySelector('.modal-overlay');
+            const closeBtn = modal.querySelector('.modal-close');
+
+            const toggleModal = () => {
+                modal.classList.toggle('opacity-0');
+                modal.classList.toggle('pointer-events-none');
+                document.body.classList.toggle('modal-active');
+            };
+
+            overlay.addEventListener('click', toggleModal);
+            closeBtn.addEventListener('click', toggleModal);
+        }
+
+        function openModal(product) {
+            const modal = document.getElementById('product-modal');
+            
+            document.getElementById('modal-title').textContent = product.name;
+            document.getElementById('modal-desc').textContent = product.description || '暫無詳細說明';
+            document.getElementById('modal-price-sale').textContent = product.sale_price;
+            document.getElementById('modal-price-original').textContent = product.original_price;
+            
+            const mainImg = document.getElementById('modal-img-main');
+            mainImg.src = product.image_main || 'https://placehold.co/600x600/eee/999?text=No+Image';
+
+            const tagsContainer = document.getElementById('modal-tags');
+            tagsContainer.innerHTML = '';
+            if (product.tags) {
+                const tags = product.tags.split(/,|、/);
+                tags.forEach(tag => {
+                    if(tag.trim()) {
+                        const span = document.createElement('span');
+                        span.className = 'bg-emerald-100 text-emerald-700 text-xs px-2 py-1 rounded-full font-medium border border-emerald-200';
+                        span.textContent = tag.trim();
+                        tagsContainer.appendChild(span);
+                    }
+                });
+            }
+
+            const extraContainer = document.getElementById('modal-extra-images');
+            extraContainer.innerHTML = '';
+
+            const addImage = (url, title) => {
+                if (!url) return;
+                const wrapper = document.createElement('div');
+                wrapper.innerHTML = `
+                    <p class="text-sm text-gray-500 mb-2 mt-4 font-bold border-b pb-1 flex items-center gap-2">
+                        <i class="fa-regular fa-image text-emerald-500"></i> ${title}
+                    </p>
+                    <img src="${url}" class="w-full rounded-lg shadow-sm border bg-white" loading="lazy">
+                `;
+                extraContainer.appendChild(wrapper);
+            };
+
+            addImage(product.image_detail, '詳細介紹');
+            addImage(product.ingredients, '成份與營養標示');
+
+            modal.classList.remove('opacity-0');
+            modal.classList.remove('pointer-events-none');
+            document.body.classList.add('modal-active');
+        }
+
+    </script>
+</body>
+</html>
