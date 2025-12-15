@@ -199,22 +199,21 @@
     <!-- JavaScript Logic -->
     <script>
         // ==========================================
-        // 設定區：請在這裡替換您的 Google Apps Script 部署網址
+        // 設定區：正式連線模式
         // ==========================================
         
         // 1. 如果 USE_MOCK_DATA = true，會使用下方的 mockData (測試用)
         // 2. 如果 USE_MOCK_DATA = false，會從 GOOGLE_SCRIPT_URL 抓取資料 (正式用)
         const USE_MOCK_DATA = false; 
         
-        // ★★★ 請將您的 Apps Script 部署網址貼在下方引號中 ★★★
-        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxbqrtUfJxMH6lX1yaC16fcxdjwHGnRmOmYtHq0baOFik4pzQ4uP-NoNLqtxYsYLemc5A/exec';
+        // ★★★ 您的 Apps Script 部署網址 ★★★
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyuzYeYCbKAD9DSEybvEw1PYdkZni_UFvN6K8GIgvhCkAwpmlhZ1AW-b_0-_RLRpagMFQ/exec';
 
         // ==========================================
-        // 模擬資料 (Mock Data) - 當您還沒部署好 Sheet 時先撐著用
+        // 模擬資料 (Mock Data) - 備用
         // ==========================================
         const mockData = [
             {
-                id: '1',
                 category: '心血管專區',
                 name: '高單位魚油',
                 description: '嚴選深海魚油，高純度 Omega-3，維持循環順暢的最佳選擇。',
@@ -225,7 +224,7 @@
                 tags: '熱銷,推薦',
                 status: '上架'
             },
-            // ... (略過重複的模擬資料以節省空間)
+            // ... (更多資料)
         ];
 
         // ==========================================
@@ -263,8 +262,13 @@
                     console.warn("API 回傳空陣列");
                 }
 
-                // 1. 過濾出狀態為 '上架' 的商品
-                allProducts = data.filter(p => p.status && p.status.trim() === '上架');
+                // 1. 過濾出狀態為 '上架' 的商品 (同時檢查 name 是否存在)
+                allProducts = data.filter(p => 
+                    p.status && 
+                    p.status.trim() === '上架' && 
+                    p.name && 
+                    p.name.trim() !== ""
+                );
 
                 // 2. 提取所有分類 (Category)
                 const uniqueCats = [...new Set(allProducts.map(p => p.category ? p.category.trim() : '未分類'))];
