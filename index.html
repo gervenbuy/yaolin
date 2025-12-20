@@ -208,7 +208,7 @@
 
                 <!-- Detail / Ingredients Images -->
                 <div id="modal-extra-images" class="space-y-4">
-                    <!-- Dynamic Images will be here -->
+                    <!-- Dynamic Text/Images will be here -->
                 </div>
             </div>
 
@@ -495,6 +495,18 @@
 
             const extraContainer = document.getElementById('modal-extra-images');
             extraContainer.innerHTML = '';
+
+            // 修改處：處理「詳細介紹」，改為文字顯示，樣式與產品說明一致
+            if (product.image_detail && product.image_detail.trim() !== '') {
+                 const detailWrapper = document.createElement('div');
+                 detailWrapper.className = 'mb-8'; // 保持間距一致
+                 detailWrapper.innerHTML = `
+                    <h4 class="font-bold text-gray-700 mb-2 border-l-4 border-emerald-500 pl-2">詳細介紹</h4>
+                    <p class="text-gray-600 leading-relaxed whitespace-pre-line">${product.image_detail}</p>
+                 `;
+                 extraContainer.appendChild(detailWrapper);
+            }
+
             const addImage = (url, title) => {
                 if (!url) return;
                 const wrapper = document.createElement('div');
@@ -506,7 +518,8 @@
                 `;
                 extraContainer.appendChild(wrapper);
             };
-            addImage(product.image_detail, '詳細介紹');
+            
+            // 成分圖依然保持圖片顯示
             addImage(product.ingredients, '成份與營養標示');
 
             modal.classList.remove('opacity-0');
