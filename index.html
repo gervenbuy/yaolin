@@ -118,7 +118,7 @@
             <div class="grid md:grid-cols-2 gap-8 items-center">
                 <div>
                     <h3 class="text-white text-lg font-bold mb-4 border-l-4 border-emerald-500 pl-3">聯絡資訊</h3>
-                    <ul class="space-y-4">
+                    <ul class="space-y-6">
                         <!-- 地址 -->
                         <li class="flex items-start gap-3">
                             <i class="fa-solid fa-location-dot mt-1.5 text-emerald-400 text-lg"></i>
@@ -133,13 +133,28 @@
                             <a href="tel:0422053458" class="hover:text-white transition text-xl font-bold tracking-wide">04-22053458</a>
                         </li>
                         
-                        <!-- 營業時間 (改為按鈕) -->
+                        <!-- 營業時間區塊 -->
                         <li class="flex items-start gap-3">
                             <i class="fa-solid fa-clock mt-1.5 text-emerald-400 text-lg"></i>
                             <div class="flex flex-col w-full">
-                                <span class="font-bold text-white mb-1">營業時間</span>
-                                <button onclick="openBusinessHours()" class="text-left text-emerald-300 hover:text-white transition underline decoration-emerald-500/30 underline-offset-4 text-sm group">
-                                    <span class="group-hover:translate-x-1 inline-block transition-transform">👉 點擊查看最新營業時間表</span>
+                                <span class="font-bold text-white mb-2">營業時間</span>
+                                
+                                <!-- 固定營業時間顯示區 -->
+                                <div class="bg-gray-700/50 p-3 rounded-lg mb-3 border border-gray-600">
+                                    <div class="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-sm text-gray-200">
+                                        <div class="font-medium text-emerald-300">週一、二、四、五</div>
+                                        <div>11:00 - 19:00</div>
+                                        <div class="font-medium text-emerald-300">週六</div>
+                                        <div>11:00 - 14:00</div>
+                                        <div class="font-medium text-red-400">週三、週日</div>
+                                        <div class="text-red-400">固定店休</div>
+                                    </div>
+                                </div>
+
+                                <!-- 連假營業時間按鈕 -->
+                                <button onclick="openBusinessHours()" class="bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-bold py-2 px-4 rounded-lg transition duration-300 flex items-center justify-center gap-2 shadow-md w-fit">
+                                    <i class="fa-regular fa-calendar-check"></i>
+                                    連假營業時間
                                 </button>
                             </div>
                         </li>
@@ -155,7 +170,7 @@
                 </div>
                 
                 <!-- Map -->
-                <div class="h-64 md:h-64 rounded-xl overflow-hidden bg-gray-700 relative shadow-lg border border-gray-600">
+                <div class="h-64 md:h-80 rounded-xl overflow-hidden bg-gray-700 relative shadow-lg border border-gray-600">
                      <iframe 
                         src="https://maps.google.com/maps?q=404臺中市北區健行路445之5號&t=&z=16&ie=UTF8&iwloc=&output=embed" 
                         width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
@@ -215,7 +230,7 @@
             <!-- Modal Footer -->
             <div id="modal-footer" class="p-4 border-t bg-gray-50 text-center">
                 <a href="https://lin.ee/fx7f7sO" target="_blank" class="block w-full bg-[#06C755] hover:bg-[#05b54d] text-white font-bold py-3 px-4 rounded-lg transition shadow-lg">
-                    <i class="fa-brands fa-line mr-2"></i> 私訊藥師下單
+                    <i class="fa-brands fa-line mr-2"></i> 洽詢官方 LINE 下單
                 </a>
             </div>
         </div>
@@ -302,7 +317,7 @@
             if (businessHoursData && businessHoursData.image_main) {
                 openModal(businessHoursData);
             } else {
-                alert('目前尚未設定營業時間表，請直接聯繫藥師或撥打電話確認。');
+                alert('目前尚未設定連假營業時間表，請直接聯繫藥師或撥打電話確認。');
             }
         }
 
