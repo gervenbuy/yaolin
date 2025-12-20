@@ -49,10 +49,8 @@
     <nav class="bg-white shadow-md sticky top-0 z-40">
         <div class="container mx-auto px-4 py-3 flex justify-between items-center">
             <div class="flex items-center gap-2">
-                <i class="fa-solid fa-staff-snake text-3xl text-emerald-600"></i>
                 <div>
                     <h1 class="text-xl font-bold text-gray-800 tracking-wide">新藥林合作藥局</h1>
-                    <p class="text-xs text-gray-500">專業藥師 • 用心服務</p>
                 </div>
             </div>
             <a href="https://lin.ee/fx7f7sO" target="_blank" class="bg-[#06C755] hover:bg-[#05b54d] text-white px-4 py-2 rounded-full text-sm font-bold flex items-center gap-2 transition-colors">
@@ -120,26 +118,51 @@
             <div class="grid md:grid-cols-2 gap-8 items-center">
                 <div>
                     <h3 class="text-white text-lg font-bold mb-4 border-l-4 border-emerald-500 pl-3">聯絡資訊</h3>
-                    <ul class="space-y-3">
+                    <ul class="space-y-4">
+                        <!-- 地址 -->
                         <li class="flex items-start gap-3">
-                            <i class="fa-solid fa-location-dot mt-1 text-emerald-400"></i>
-                            <a href="https://www.google.com/maps/search/?api=1&query=404臺中市北區健行路445之5號" target="_blank" class="hover:text-white transition">
-                                404臺中市北區健行路445之5號 (點擊導航)
+                            <i class="fa-solid fa-location-dot mt-1.5 text-emerald-400 text-lg"></i>
+                            <a href="https://www.google.com/maps/search/?api=1&query=404臺中市北區健行路445之5號" target="_blank" class="hover:text-white transition leading-relaxed">
+                                404臺中市北區健行路445之5號 <br><span class="text-sm text-gray-400">(點擊開啟導航)</span>
                             </a>
                         </li>
+                        
+                        <!-- 電話 -->
                         <li class="flex items-center gap-3">
-                            <i class="fa-brands fa-line text-emerald-400"></i>
-                            <a href="https://lin.ee/fx7f7sO" target="_blank" class="hover:text-white transition">LINE 官方帳號諮詢</a>
+                            <i class="fa-solid fa-phone text-emerald-400 text-lg"></i>
+                            <a href="tel:0422053458" class="hover:text-white transition text-xl font-bold tracking-wide">04-22053458</a>
+                        </li>
+                        
+                        <!-- 營業時間 (改為按鈕) -->
+                        <li class="flex items-start gap-3">
+                            <i class="fa-solid fa-clock mt-1.5 text-emerald-400 text-lg"></i>
+                            <div class="flex flex-col w-full">
+                                <span class="font-bold text-white mb-1">營業時間</span>
+                                <button onclick="openBusinessHours()" class="text-left text-emerald-300 hover:text-white transition underline decoration-emerald-500/30 underline-offset-4 text-sm group">
+                                    <span class="group-hover:translate-x-1 inline-block transition-transform">👉 點擊查看最新營業時間表</span>
+                                </button>
+                            </div>
+                        </li>
+
+                        <!-- LINE -->
+                        <li class="flex items-center gap-3 pt-2">
+                            <a href="https://lin.ee/fx7f7sO" target="_blank" class="flex items-center gap-2 text-emerald-400 hover:text-white transition group">
+                                <i class="fa-brands fa-line text-2xl group-hover:scale-110 transition-transform"></i>
+                                <span class="font-medium underline decoration-emerald-500/30 underline-offset-4">LINE 官方帳號諮詢</span>
+                            </a>
                         </li>
                     </ul>
                 </div>
-                <div class="h-48 rounded-lg overflow-hidden bg-gray-700 relative">
+                
+                <!-- Map -->
+                <div class="h-64 md:h-64 rounded-xl overflow-hidden bg-gray-700 relative shadow-lg border border-gray-600">
                      <iframe 
                         src="https://maps.google.com/maps?q=404臺中市北區健行路445之5號&t=&z=16&ie=UTF8&iwloc=&output=embed" 
                         width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
                 </div>
             </div>
-            <div class="text-center text-sm text-gray-500 mt-8 border-t border-gray-700 pt-4">
+            
+            <div class="text-center text-sm text-gray-500 mt-10 border-t border-gray-700 pt-6">
                 &copy; 2025 新藥林合作藥局 All Rights Reserved.
             </div>
         </div>
@@ -166,19 +189,19 @@
                 <!-- Main Image -->
                 <img id="modal-img-main" src="" alt="" class="w-full h-auto rounded-lg mb-6 object-cover bg-gray-100">
                 
-                <!-- Price Block -->
-                <div class="flex items-end gap-3 mb-6 p-4 bg-emerald-50 rounded-lg border border-emerald-100">
-                    <div class="flex-1">
-                        <p class="text-sm text-gray-500">優惠價格</p>
-                        <div class="flex items-baseline gap-2">
+                <!-- Price Block (Modified to match Card style) -->
+                <div id="modal-price-block" class="flex items-center gap-3 mb-6 p-4 bg-emerald-50 rounded-lg border border-emerald-100">
+                    <div class="flex-1 flex flex-col">
+                        <span id="price-original-container" class="text-gray-400 line-through text-sm">原價 NT$ <span id="modal-price-original">0</span></span>
+                        <div class="flex items-baseline gap-1">
+                            <span class="text-lg font-bold text-red-600">特價</span>
                             <span class="text-3xl font-bold text-red-600">NT$ <span id="modal-price-sale">0</span></span>
-                            <span class="text-gray-400 line-through text-sm">NT$ <span id="modal-price-original">0</span></span>
                         </div>
                     </div>
                 </div>
 
                 <!-- Description -->
-                <div class="mb-8">
+                <div id="modal-desc-block" class="mb-8">
                     <h4 class="font-bold text-gray-700 mb-2 border-l-4 border-emerald-500 pl-2">產品說明</h4>
                     <p id="modal-desc" class="text-gray-600 leading-relaxed whitespace-pre-line"></p>
                 </div>
@@ -190,11 +213,10 @@
             </div>
 
             <!-- Modal Footer -->
-            <div class="p-4 border-t bg-gray-50 text-center">
+            <div id="modal-footer" class="p-4 border-t bg-gray-50 text-center">
                 <a href="https://lin.ee/fx7f7sO" target="_blank" class="block w-full bg-[#06C755] hover:bg-[#05b54d] text-white font-bold py-3 px-4 rounded-lg transition shadow-lg">
                     <i class="fa-brands fa-line mr-2"></i> 私訊藥師下單
                 </a>
-                <p class="text-xs text-gray-400 mt-2">實際價格與庫存請以藥局現場或 LINE 回覆為主</p>
             </div>
         </div>
     </div>
@@ -209,7 +231,8 @@
 
         // 模擬資料 (備用)
         const mockData = [
-            { category: '心血管專區', name: '高單位魚油', description: '嚴選深海魚油...', original_price: '1200', sale_price: '980', image_main: 'https://i.meee.com.tw/J4qH81B.png', status: '上架' }
+            { category: '心血管專區', name: '高單位魚油', description: '嚴選深海魚油...', original_price: '1200', sale_price: '980', image_main: 'https://i.meee.com.tw/J4qH81B.png', status: '上架' },
+            { category: '系統', name: '營業時間', description: '', original_price: '', sale_price: '', image_main: 'https://placehold.co/600x400/orange/white?text=Open+Hours', status: '上架' }
         ];
 
         // ==========================================
@@ -219,6 +242,7 @@
         let allProducts = [];
         let categories = [];
         let activeCategory = '';
+        let businessHoursData = null; // 儲存營業時間的物件
 
         document.addEventListener('DOMContentLoaded', () => {
             initApp();
@@ -233,14 +257,22 @@
                     await new Promise(resolve => setTimeout(resolve, 600)); 
                     data = mockData;
                 } else {
-                    // 使用改良版的 fetch 函式，帶有重試機制
                     data = await fetchSheetDataWithRetry(GOOGLE_SCRIPT_URL);
                 }
 
                 if (!Array.isArray(data)) throw new Error("API 格式錯誤");
                 
-                // 過濾資料
-                allProducts = data.filter(p => p.status && p.status.trim() === '上架' && p.name && p.name.trim() !== "");
+                // 1. 先抓出「營業時間」的資料 (假設名稱為 '營業時間')
+                businessHoursData = data.find(p => p.name && p.name.trim() === '營業時間');
+
+                // 2. 過濾出一般商品 (狀態上架 + 有名稱 + 名稱不是營業時間)
+                allProducts = data.filter(p => 
+                    p.status && 
+                    p.status.trim() === '上架' && 
+                    p.name && 
+                    p.name.trim() !== "" &&
+                    p.name.trim() !== '營業時間'
+                );
 
                 const uniqueCats = [...new Set(allProducts.map(p => p.category ? p.category.trim() : '未分類'))];
                 categories = uniqueCats;
@@ -265,6 +297,15 @@
             }
         }
 
+        // 開啟營業時間視窗的函式
+        function openBusinessHours() {
+            if (businessHoursData && businessHoursData.image_main) {
+                openModal(businessHoursData);
+            } else {
+                alert('目前尚未設定營業時間表，請直接聯繫藥師或撥打電話確認。');
+            }
+        }
+
         // ★★★ 改良版 Fetch：自動重試 + 防止快取 ★★★
         async function fetchSheetDataWithRetry(url, retries = 3) {
             if (!url || url.includes('您的_APPS_SCRIPT')) {
@@ -273,10 +314,8 @@
 
             for (let i = 0; i < retries; i++) {
                 try {
-                    // 1. 加上時間戳記，防止瀏覽器讀到舊的快取資料
                     const cacheBuster = url + (url.includes('?') ? '&' : '?') + 't=' + new Date().getTime();
                     
-                    // 2. 設定 Redirect 模式為 follow
                     const response = await fetch(cacheBuster, {
                         method: "GET",
                         redirect: "follow"
@@ -287,24 +326,19 @@
                     }
                     
                     const json = await response.json();
-                    return json; // 成功就直接回傳
+                    return json; 
 
                 } catch (err) {
                     console.warn(`第 ${i + 1} 次嘗試失敗...`, err);
-                    
-                    // 更新畫面文字讓使用者知道還在努力中
                     const loadingText = document.getElementById('loading-text');
                     if(loadingText) loadingText.textContent = `連線忙碌中，正在重試 (${i+1}/${retries})...`;
 
-                    if (i === retries - 1) throw err; // 如果是最後一次也失敗，就真的拋出錯誤
-                    
-                    // 等待 1.5 秒再試
+                    if (i === retries - 1) throw err; 
                     await new Promise(r => setTimeout(r, 1500));
                 }
             }
         }
 
-        // 渲染分類頁籤
         function renderTabs() {
             const container = document.getElementById('category-container');
             container.innerHTML = '';
@@ -326,7 +360,6 @@
             });
         }
 
-        // 渲染產品列表
         function renderProducts(category) {
             const grid = document.getElementById('product-grid');
             const emptyState = document.getElementById('empty-category');
@@ -351,7 +384,6 @@
             });
         }
 
-        // 建立單個產品卡片
         function createProductCard(product) {
             const div = document.createElement('div');
             div.className = 'bg-white rounded-xl shadow-sm hover:shadow-lg transition-shadow duration-300 overflow-hidden group cursor-pointer border border-gray-100 flex flex-col h-full opacity-0 fill-mode-forwards';
@@ -408,10 +440,43 @@
 
         function openModal(product) {
             const modal = document.getElementById('product-modal');
+            const footer = document.getElementById('modal-footer');
+
+            // 判斷是否為「營業時間」頁面
+            if (product.name && product.name.trim() === '營業時間') {
+                footer.classList.add('hidden'); // 隱藏按鈕區域
+            } else {
+                footer.classList.remove('hidden'); // 一般商品則顯示
+            }
+
             document.getElementById('modal-title').textContent = product.name;
-            document.getElementById('modal-desc').textContent = product.description || '暫無詳細說明';
-            document.getElementById('modal-price-sale').textContent = product.sale_price;
-            document.getElementById('modal-price-original').textContent = product.original_price;
+            
+            // 處理說明文字
+            const descBlock = document.getElementById('modal-desc-block');
+            if (product.description && product.description.trim() !== '') {
+                descBlock.classList.remove('hidden');
+                document.getElementById('modal-desc').textContent = product.description;
+            } else {
+                descBlock.classList.add('hidden');
+            }
+
+            // 處理價格顯示
+            const priceBlock = document.getElementById('modal-price-block');
+            if (product.sale_price || product.original_price) {
+                priceBlock.classList.remove('hidden');
+                document.getElementById('modal-price-sale').textContent = product.sale_price || '0';
+                
+                const originalPriceContainer = document.getElementById('price-original-container');
+                if (product.original_price) {
+                    originalPriceContainer.classList.remove('hidden');
+                    document.getElementById('modal-price-original').textContent = product.original_price;
+                } else {
+                    originalPriceContainer.classList.add('hidden');
+                }
+            } else {
+                priceBlock.classList.add('hidden');
+            }
+            
             document.getElementById('modal-img-main').src = product.image_main || 'https://placehold.co/600x600/eee/999?text=No+Image';
 
             const tagsContainer = document.getElementById('modal-tags');
