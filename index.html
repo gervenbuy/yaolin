@@ -1,393 +1,547 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>三瑩●設計 │ 您的夢想藍圖，我們用心實現</title>
+    <title>新藥林藥局｜線上選品目錄</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    
     <style>
-        body {
-            font-family: 'Noto Sans TC', sans-serif;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
+        body { font-family: 'Noto Sans TC', sans-serif; background-color: #f3f4f6; }
+        
+        /* 隱藏捲軸但保留功能 */
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* 載入動畫 */
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #10B981;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
         }
-        .hero-bg {
-            background-image: url('https://images.unsplash.com/photo-1618220179428-22790b461013?q=80&w=2127&auto=format&fit=crop');
-            background-size: cover;
-            background-position: center;
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* Modal 動畫 */
+        .modal { transition: opacity 0.25s ease; }
+        body.modal-active { overflow: hidden; }
+
+        /* 簡單的淡入動畫 */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-        .section-title {
-            letter-spacing: 0.1em;
-        }
-        .fade-in {
-            opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
-        }
-        .fade-in.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-        .card-hover {
-            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
-        }
-        .card-hover:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-        }
-        /* Loading Skeleton Animation */
-        .skeleton {
-            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-            background-size: 200% 100%;
-            animation: loading 1.5s infinite;
-        }
-        @keyframes loading {
-            0% { background-position: 200% 0; }
-            100% { background-position: -200% 0; }
+        .animate-fade-in-up {
+            animation: fadeInUp 0.5s ease-out forwards;
         }
     </style>
 </head>
-<body class="bg-stone-50 text-stone-800">
+<body class="text-gray-800 flex flex-col min-h-screen">
 
-    <!-- Header -->
-    <header class="bg-white/80 backdrop-blur-md sticky top-0 z-50 shadow-sm">
-        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
-            <div class="text-2xl font-bold text-stone-700 tracking-wider flex items-center">
-                三瑩<span class="text-amber-600 text-sm px-2 align-middle">●</span>設計
+    <!-- Navbar -->
+    <nav class="bg-white shadow-md sticky top-0 z-40">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center gap-2">
+                <div>
+                    <h1 class="text-xl font-bold text-gray-800 tracking-wide">新藥林藥局</h1>
+                </div>
             </div>
-            <nav class="hidden md:flex space-x-8 items-center">
-                <a href="#features" class="text-stone-600 hover:text-amber-600 transition-colors">核心優勢</a>
-                <a href="#concept" class="text-stone-600 hover:text-amber-600 transition-colors">專業證照</a>
-                <a href="#services" class="text-stone-600 hover:text-amber-600 transition-colors">服務項目</a>
-                <a href="#gallery" class="text-stone-600 hover:text-amber-600 transition-colors">案例欣賞</a>
-                <a href="https://www.facebook.com/groups/triwin" target="_blank" class="bg-amber-600 text-white px-5 py-2 rounded-full hover:bg-amber-700 transition-all shadow-md hover:shadow-lg">
-                    立即諮詢
-                </a>
-            </nav>
-            <div class="md:hidden">
-                 <a href="https://www.facebook.com/groups/triwin" target="_blank" class="bg-amber-600 text-white px-4 py-2 rounded-full hover:bg-amber-700 transition-all text-sm">
-                    免費諮詢
-                </a>
-            </div>
+            <!-- 按鈕已移除 -->
+        </div>
+    </nav>
+
+    <!-- Hero Section (Updated with lighter theme) -->
+    <header class="relative py-16 md:py-20 overflow-hidden">
+        <!-- Background Image -->
+        <div class="absolute inset-0 bg-[url('https://i.meee.com.tw/m1STlwz.jpg')] bg-cover bg-center"></div>
+        
+        <!-- White Overlay for Lighter Theme -->
+        <div class="absolute inset-0 bg-white/70 backdrop-blur-[2px]"></div>
+        
+        <div class="container mx-auto px-4 relative z-10 text-center">
+            <h2 class="text-3xl md:text-4xl font-bold mb-3 text-emerald-900 tracking-wide">守護全家人的健康</h2>
+            <p class="text-emerald-800 text-lg font-medium">嚴選高品質保健食品，提供專業諮詢建議</p>
         </div>
     </header>
 
-    <!-- Hero Section -->
-    <main>
-        <section class="hero-bg relative h-[600px] text-white flex items-center">
-            <div class="absolute inset-0 bg-black/50"></div>
-            <div class="container mx-auto px-6 text-center relative z-10">
-                <h1 class="text-4xl md:text-6xl font-bold leading-tight mb-4 tracking-wide fade-in">您的夢想藍圖，我們用心實現</h1>
-                <p class="text-lg md:text-2xl text-stone-200 mb-8 fade-in" style="transition-delay: 200ms;">不只懂木工，更懂您的心。我們在美觀、實用與預算中，為您找到完美平衡。</p>
-                <a href="https://www.facebook.com/groups/triwin" target="_blank" class="bg-amber-600 text-white px-8 py-4 rounded-full text-lg font-semibold hover:bg-amber-700 transition-all shadow-lg hover:shadow-xl transform hover:scale-105 fade-in" style="transition-delay: 400ms;">
-                    開啟您與理想空間的對話
-                </a>
-            </div>
-        </section>
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-6 flex-grow">
+        
+        <!-- Loading State -->
+        <div id="loading" class="flex flex-col items-center justify-center py-20">
+            <div class="loader mb-4"></div>
+            <p id="loading-text" class="text-gray-500">正在同步雲端資料...</p>
+        </div>
 
-        <!-- Features Section -->
-        <section id="features" class="py-20 bg-white">
-            <div class="container mx-auto px-6">
-                <div class="text-center mb-16">
-                    <h2 class="text-sm font-bold text-amber-600 uppercase section-title fade-in">厭倦了裝潢的溝通惡夢？</h2>
-                    <p class="text-3xl md:text-4xl font-bold text-stone-800 mt-2 fade-in" style="transition-delay: 100ms;">我們最大的特色：木工與水電的完美整合</p>
-                    <p class="mt-4 max-w-2xl mx-auto text-stone-600 fade-in" style="transition-delay: 200ms;">
-                        裝潢最大的痛點，是不同工種間的溝通與銜接。三瑩讓裝潢變簡單了！
-                    </p>
-                </div>
-                <div class="grid md:grid-cols-3 gap-8 text-center">
-                    <!-- Feature 1 -->
-                    <div class="bg-stone-50 p-8 rounded-2xl card-hover fade-in" style="transition-delay: 300ms;">
-                        <div class="flex items-center justify-center h-16 w-16 bg-amber-100 text-amber-600 rounded-full mx-auto mb-6">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a2 2 0 01-2-2V4a2 2 0 012-2h6a2 2 0 012 2v4z" /></svg>
-                        </div>
-                        <h3 class="text-xl font-bold mb-2">溝通零斷層</h3>
-                        <p class="text-stone-600">一個窗口對到底，從設計到施工，您的想法精準傳達，溝通不心累。</p>
-                    </div>
-                    <!-- Feature 2 -->
-                    <div class="bg-stone-50 p-8 rounded-2xl card-hover fade-in" style="transition-delay: 400ms;">
-                        <div class="flex items-center justify-center h-16 w-16 bg-amber-100 text-amber-600 rounded-full mx-auto mb-6">
-                             <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
-                        </div>
-                        <h3 class="text-xl font-bold mb-2">工序超流暢</h3>
-                        <p class="text-stone-600">動線、插座、出水口一步到位，無縫施工超效率，進度絕不延遲。</p>
-                    </div>
-                    <!-- Feature 3 -->
-                    <div class="bg-stone-50 p-8 rounded-2xl card-hover fade-in" style="transition-delay: 500ms;">
-                        <div class="flex items-center justify-center h-16 w-16 bg-amber-100 text-amber-600 rounded-full mx-auto mb-6">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10l-2 1m0 0l-2-1m2 1v2.5M20 7l-2 1m2-1l-2-1m2 1v2.5M14 4l-2-1-2 1M4 7l2 1M4 7l2-1M4 7v2.5M12 21l-2-1m2 1l2-1m-2 1v-2.5M6 18l-2-1v-2.5M18 18l2-1v-2.5" /></svg>
-                        </div>
-                        <h3 class="text-xl font-bold mb-2">空間更極致</h3>
-                        <p class="text-stone-600">木作與管線完美結合，不浪費一寸空間，將設計感發揮到極致。</p>
-                    </div>
-                </div>
-            </div>
-        </section>
+        <!-- Error State -->
+        <div id="error-msg" class="hidden text-center py-20 text-red-500 bg-red-50 rounded-lg border border-red-200">
+            <i class="fa-solid fa-circle-exclamation text-4xl mb-2"></i>
+            <p class="font-bold text-lg mb-1">資料讀取失敗</p>
+            <p class="text-sm text-red-400 mb-4" id="error-detail">請檢查網路連線</p>
+            <button onclick="location.reload()" class="px-6 py-2 bg-white border border-red-300 rounded-full text-red-600 hover:bg-red-50 transition shadow-sm font-bold">
+                <i class="fa-solid fa-rotate-right mr-1"></i> 重新載入
+            </button>
+        </div>
 
-        <!-- Concept Section -->
-        <section id="concept" class="py-20 bg-stone-100">
-            <div class="container mx-auto px-6">
-                <div class="flex flex-col md:flex-row items-center gap-12">
-                    <div class="md:w-1/3 text-center fade-in flex justify-center">
-                        <div class="relative bg-white p-2 rounded-lg shadow-xl hover:scale-105 transition-transform duration-300">
-                             <img src="https://i.meee.com.tw/wBt4knY.png" alt="專業證照" class="w-auto h-48 md:h-64 object-contain rounded">
-                        </div>
-                    </div>
-                    <div class="md:w-2/3 text-center md:text-left fade-in" style="transition-delay: 200ms;">
-                        <h2 class="text-sm font-bold text-amber-600 uppercase section-title">OUR CONCEPT</h2>
-                        <p class="text-3xl md:text-4xl font-bold text-stone-800 mt-2">專業證照，品質保障</p>
-                        <p class="mt-4 text-stone-600 max-w-xl mx-auto md:mx-0">
-                            擁有合格專業證照，我們提供裝修服務更注重施工品質，安全有保障。
-                        </p>
-                    </div>
+        <!-- App Container (Hidden until loaded) -->
+        <div id="app-content" class="hidden">
+            
+            <!-- Category Tabs (Sticky under nav) -->
+            <div class="sticky top-[68px] z-30 bg-[#f3f4f6] pt-2 pb-4 -mx-4 px-4 shadow-sm md:shadow-none md:static md:bg-transparent md:mx-0 md:px-0 md:pt-0">
+                <div id="category-container" class="flex gap-2 overflow-x-auto hide-scrollbar pb-1">
+                    <!-- Categories will be injected here -->
                 </div>
             </div>
-        </section>
 
-        <!-- Services Section -->
-        <section id="services" class="py-20 bg-white">
-            <div class="container mx-auto px-6">
-                <div class="text-center mb-16">
-                    <h2 class="text-sm font-bold text-amber-600 uppercase section-title fade-in">SERVICE</h2>
-                    <p class="text-3xl md:text-4xl font-bold text-stone-800 mt-2 fade-in" style="transition-delay: 100ms;">服務項目</p>
-                </div>
-                <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-                    <!-- Service Card 1 -->
-                    <div class="bg-stone-50 rounded-2xl card-hover fade-in overflow-hidden flex flex-col" style="transition-delay: 200ms;">
-                        <img src="https://i.meee.com.tw/myCHvup.png" alt="木工裝潢" class="w-full h-40 object-cover">
-                        <div class="p-6 flex-grow">
-                            <h3 class="font-bold text-lg">木工裝潢</h3>
-                            <p class="text-stone-600 text-sm mt-2">造型天花板、室內木作裝潢、客製櫥櫃、系統櫃</p>
-                        </div>
-                    </div>
-                    <!-- Service Card 2 -->
-                    <div class="bg-stone-50 rounded-2xl card-hover fade-in overflow-hidden flex flex-col" style="transition-delay: 300ms;">
-                        <img src="https://images.unsplash.com/photo-1596079890744-c1a0462d0975?q=80&w=1771&auto=format&fit=crop" alt="室內設計" class="w-full h-40 object-cover">
-                        <div class="p-6 flex-grow">
-                            <h3 class="font-bold text-lg">室內設計</h3>
-                            <p class="text-stone-600 text-sm mt-2">居家設計、商業空間設計</p>
-                        </div>
-                    </div>
-                    <!-- Service Card 3 -->
-                    <div class="bg-stone-50 rounded-2xl card-hover fade-in overflow-hidden flex flex-col" style="transition-delay: 400ms;">
-                        <img src="https://i.meee.com.tw/AYbKsFg.png" alt="老屋翻新" class="w-full h-40 object-cover">
-                        <div class="p-6 flex-grow">
-                            <h3 class="font-bold text-lg">老屋翻新</h3>
-                            <p class="text-stone-600 text-sm mt-2">整體規劃翻新、局部翻新</p>
-                        </div>
-                    </div>
-                    <!-- Service Card 4 -->
-                    <div class="bg-stone-50 rounded-2xl card-hover fade-in overflow-hidden flex flex-col" style="transition-delay: 500ms;">
-                         <img src="https://images.unsplash.com/photo-1541888946425-d81bb19240f5?q=80&w=1770&auto=format&fit=crop" alt="統包工程" class="w-full h-40 object-cover">
-                        <div class="p-6 flex-grow">
-                            <h3 class="font-bold text-lg">統包工程</h3>
-                            <p class="text-stone-600 text-sm mt-2">泥作、隔間、水電、油漆、防水、修繕</p>
-                        </div>
-                    </div>
-                </div>
+            <!-- Product Grid -->
+            <div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 animate-fade-in-up">
+                <!-- Products will be injected here -->
             </div>
-        </section>
 
-        <!-- Gallery Section -->
-        <section id="gallery" class="py-20 bg-stone-100">
-            <div class="container mx-auto px-6">
-                <div class="text-center mb-16">
-                    <h2 class="text-sm font-bold text-amber-600 uppercase section-title fade-in">PORTFOLIO</h2>
-                    <p class="text-3xl md:text-4xl font-bold text-stone-800 mt-2 fade-in" style="transition-delay: 100ms;">案例欣賞</p>
-                </div>
-                
-                <!-- Gallery Container: Dynamic Content will be injected here -->
-                <div id="gallery-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 min-h-[400px]">
-                    <!-- Loading Skeletons -->
-                    <div class="bg-white rounded-2xl overflow-hidden shadow-sm h-96 flex flex-col skeleton"></div>
-                    <div class="bg-white rounded-2xl overflow-hidden shadow-sm h-96 flex flex-col skeleton"></div>
-                    <div class="bg-white rounded-2xl overflow-hidden shadow-sm h-96 flex flex-col skeleton"></div>
-                </div>
+            <!-- Empty State for Category -->
+            <div id="empty-category" class="hidden text-center py-20 text-gray-500">
+                <i class="fa-solid fa-box-open text-4xl mb-2 text-gray-300"></i>
+                <p>此分類目前沒有上架商品</p>
             </div>
-        </section>
-
-        <!-- CTA Section -->
-        <section id="contact" class="bg-amber-600 text-white">
-            <div class="container mx-auto px-6 py-20 text-center">
-                <h2 class="text-3xl md:text-4xl font-bold mb-4 fade-in">您的家，值得最好的對待。</h2>
-                <p class="text-lg text-amber-100 max-w-2xl mx-auto mb-8 fade-in" style="transition-delay: 200ms;">
-                    讓我們成為您打造夢想空間的神隊友。立即點擊下方按鈕，預約免費諮詢，讓我們聽聽您的故事。
-                </p>
-                <a href="https://www.facebook.com/groups/triwin" target="_blank" class="bg-white text-amber-700 px-8 py-4 rounded-full text-lg font-semibold hover:bg-amber-50 transition-all shadow-lg hover:shadow-xl transform hover:scale-105 fade-in" style="transition-delay: 400ms;">
-                    預約免費諮詢
-                </a>
-            </div>
-        </section>
+        </div>
     </main>
 
-    <!-- Footer -->
-    <footer class="bg-stone-800 text-stone-300">
-        <div class="container mx-auto px-6 py-10">
-            <div class="grid md:grid-cols-3 gap-8 text-center md:text-left">
-                <div class="md:col-span-1">
-                    <h3 class="text-xl font-bold text-white mb-2 flex items-center justify-center md:justify-start">
-                        三瑩<span class="text-amber-500 text-xs px-2 align-middle">●</span>設計
-                    </h3>
-                    <p class="text-sm text-stone-400">您的夢想藍圖，我們用心實現。</p>
-                    <div class="flex space-x-4 mt-4 justify-center md:justify-start">
-                        <a href="https://www.facebook.com/groups/triwin" target="_blank" class="text-stone-400 hover:text-white" aria-label="Facebook"><svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24"><path d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v2.385z"/></svg></a>
-                        <a href="https://maps.app.goo.gl/r7BRvuSVeXV95w9k6?g_st=ic" target="_blank" class="text-stone-400 hover:text-white" aria-label="Google Maps"><svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg></a>
-                    </div>
-                </div>
+    <!-- Location & Contact Footer -->
+    <footer class="bg-gray-800 text-gray-300 py-8 mt-8">
+        <div class="container mx-auto px-4">
+            <div class="grid md:grid-cols-2 gap-8 items-center">
                 <div>
-                    <h3 class="font-semibold text-white mb-4">服務區域 <span class="block text-xs text-stone-400">Service Area</span></h3>
-                    <ul class="text-sm text-stone-400 space-y-2">
-                        <li>台中、苗栗、南投、彰化</li>
-                        <li>其他地區歡迎洽詢</li>
+                    <h3 class="text-white text-lg font-bold mb-4 border-l-4 border-emerald-500 pl-3">聯絡資訊</h3>
+                    <ul class="space-y-6">
+                        <!-- 地址 (修正定位) -->
+                        <li class="flex items-start gap-3">
+                            <i class="fa-solid fa-location-dot mt-1.5 text-emerald-400 text-lg"></i>
+                            <a href="https://www.google.com/maps/search/?api=1&query=新藥林藥局+404臺中市北區健行路445-5號" target="_blank" class="hover:text-white transition leading-relaxed">
+                                404臺中市北區健行路445之5號 <br><span class="text-sm text-gray-400">(點擊開啟導航)</span>
+                            </a>
+                        </li>
+                        
+                        <!-- 電話 -->
+                        <li class="flex items-center gap-3">
+                            <i class="fa-solid fa-phone text-emerald-400 text-lg"></i>
+                            <a href="tel:0422053458" class="hover:text-white transition text-xl font-bold tracking-wide">04-22053458</a>
+                        </li>
+                        
+                        <!-- 營業時間區塊 -->
+                        <li class="flex items-start gap-3">
+                            <i class="fa-solid fa-clock mt-1.5 text-emerald-400 text-lg"></i>
+                            <div class="flex flex-col w-full">
+                                <span class="font-bold text-white mb-2">營業時間</span>
+                                
+                                <!-- 固定營業時間顯示區 -->
+                                <div class="bg-gray-700/50 p-3 rounded-lg mb-3 border border-gray-600">
+                                    <div class="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-sm text-gray-200">
+                                        <div class="font-medium text-emerald-300">週一、二、四、五</div>
+                                        <div>11:00 - 19:00</div>
+                                        <div class="font-medium text-emerald-300">週六</div>
+                                        <div>11:00 - 14:00</div>
+                                        <div class="font-medium text-red-400">週三、週日</div>
+                                        <div class="text-red-400">固定店休</div>
+                                    </div>
+                                </div>
+
+                                <!-- 連假營業時間按鈕 -->
+                                <button onclick="openBusinessHours()" class="bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-bold py-2 px-4 rounded-lg transition duration-300 flex items-center justify-center gap-2 shadow-md w-fit">
+                                    <i class="fa-regular fa-calendar-check"></i>
+                                    連假營業時間
+                                </button>
+                            </div>
+                        </li>
+
+                        <!-- LINE -->
+                        <li class="flex items-center gap-3 pt-2">
+                            <a href="https://lin.ee/fx7f7sO" target="_blank" class="flex items-center gap-2 text-emerald-400 hover:text-white transition group">
+                                <i class="fa-brands fa-line text-2xl group-hover:scale-110 transition-transform"></i>
+                                <span class="font-medium underline decoration-emerald-500/30 underline-offset-4">LINE 官方帳號諮詢</span>
+                            </a>
+                        </li>
                     </ul>
                 </div>
-                 <div>
-                    <h3 class="font-semibold text-white mb-4">標籤</h3>
-                    <div class="flex flex-wrap gap-2 text-xs text-stone-400 justify-center md:justify-start">
-                        <span class="bg-stone-700 px-2 py-1 rounded">#木作統包工程</span>
-                        <span class="bg-stone-700 px-2 py-1 rounded">#系統櫃工程</span>
-                        <span class="bg-stone-700 px-2 py-1 rounded">#老屋翻新</span>
-                        <span class="bg-stone-700 px-2 py-1 rounded">#木工水電整合</span>
-                    </div>
+                
+                <!-- Map (修正嵌入搜尋字串) -->
+                <div class="h-64 md:h-80 rounded-xl overflow-hidden bg-gray-700 relative shadow-lg border border-gray-600">
+                     <iframe 
+                        src="https://maps.google.com/maps?q=新藥林藥局+404臺中市北區健行路445-5號&t=&z=16&ie=UTF8&iwloc=&output=embed" 
+                        width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
                 </div>
             </div>
-            <div class="mt-8 border-t border-stone-700 pt-6 text-center text-xs text-stone-500">
-                <p>&copy; 2025 三瑩室內裝修有限公司. All Rights Reserved.</p>
+            
+            <div class="text-center text-sm text-gray-500 mt-10 border-t border-gray-700 pt-6">
+                &copy; 2025 新藥林藥局 All Rights Reserved.
             </div>
         </div>
     </footer>
 
-    <!-- LINE Floating Button -->
-    <a href="https://lin.ee/dmVifL2" target="_blank" class="fixed bottom-6 right-6 z-[999] flex items-center justify-center w-14 h-14 bg-[#06C755] hover:bg-[#05b34c] text-white rounded-full shadow-lg transition-all duration-300 hover:scale-110 hover:-translate-y-1 group">
-        <!-- Tooltip -->
-        <span class="absolute right-full mr-3 bg-white text-stone-700 px-3 py-1 rounded-lg text-sm font-bold shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap pointer-events-none">
-            加 LINE 諮詢
-        </span>
-        <!-- LINE Icon -->
-        <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" viewBox="0 0 16 16">
-            <path d="M8 0c4.418 0 8 2.972 8 6.637 0 3.665-3.582 6.637-8 6.637-.927 0-1.823-.13-2.67-.372-1.077.672-2.883 1.256-3.048 1.3-.16.04-.326-.068-.31-.237.016-.168.202-1.07.76-2.07C.942 10.457 0 8.636 0 6.637 0 2.972 3.582 0 8 0zm.603 5.305h-1.63v2.662H8.603a.355.355 0 1 1 0 .71H6.618a.355.355 0 0 1-.355-.355V5.305a.355.355 0 0 1 .355-.355h1.988a.355.355 0 1 1 0 .71zm-4.326 0h1.63a.355.355 0 1 1 0 .71h-1.275v2.662a.355.355 0 1 1-.71 0V5.305zm7.398 0h.355a.355.355 0 1 1 0 .71h-.355v.93l1.458-1.6a.356.356 0 0 1 .26-.11h.003a.355.355 0 0 1 .355.355v3.372a.355.355 0 1 1-.71 0v-.928l-1.46 1.602a.355.355 0 0 1-.617-.263V5.305zm-2.835 0h.355a.355.355 0 0 1 .355.355v2.662a.355.355 0 0 1-.355.355h-.355a.355.355 0 0 1-.355-.355V5.66a.355.355 0 0 1 .355-.355z"/>
-        </svg>
-    </a>
+    <!-- Product Detail Modal -->
+    <div id="product-modal" class="modal opacity-0 pointer-events-none fixed w-full h-full top-0 left-0 flex items-center justify-center z-50 px-4">
+        <div class="modal-overlay absolute w-full h-full bg-black opacity-50"></div>
+        
+        <div class="modal-container bg-white w-full max-w-2xl mx-auto rounded-xl shadow-2xl z-50 overflow-y-auto max-h-[90vh] animate-scale-in">
+            <!-- Modal Header -->
+            <div class="flex justify-between items-center p-4 border-b sticky top-0 bg-white z-10">
+                <h3 id="modal-title" class="text-xl font-bold text-emerald-800">產品名稱</h3>
+                <div class="modal-close cursor-pointer z-50 p-2 hover:bg-gray-100 rounded-full transition">
+                    <i class="fa-solid fa-xmark text-xl text-gray-600"></i>
+                </div>
+            </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const faders = document.querySelectorAll('.fade-in');
-
-            const appearOptions = {
-                threshold: 0.1,
-                rootMargin: "0px 0px -50px 0px"
-            };
-
-            const appearOnScroll = new IntersectionObserver(function(entries, appearOnScroll) {
-                entries.forEach(entry => {
-                    if (!entry.isIntersecting) {
-                        return;
-                    } else {
-                        entry.target.classList.add('visible');
-                        appearOnScroll.unobserve(entry.target);
-                    }
-                });
-            }, appearOptions);
-
-            faders.forEach(fader => {
-                appearOnScroll.observe(fader);
-            });
-
-            // Smooth scrolling for navigation links
-            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-                anchor.addEventListener('click', function (e) {
-                    e.preventDefault();
-                    document.querySelector(this.getAttribute('href')).scrollIntoView({
-                        behavior: 'smooth'
-                    });
-                });
-            });
-
-            // --------------------------------------------------------
-            // Google Sheet API Logic
-            // --------------------------------------------------------
-            // STEP 1: 將您部署好的 Web App URL 貼在下方引號中
-            const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyX5CWLALSSJgAMa3HG-7AAxs6zv8TQ7_-KwAAeofOCX8lBEdQ3s6vYtNrlr7j2A3go/exec'; 
-
-            const galleryContainer = document.getElementById('gallery-container');
-
-            async function fetchGalleryData() {
-                // 如果沒有設定 URL，顯示預設訊息 (為了演示目的，若無 URL 則不執行)
-                if (GOOGLE_SCRIPT_URL === '請將您的_WEB_APP_URL_貼在這裡') {
-                    console.log('請先設定 Google Script URL');
-                    return; 
-                }
-
-                try {
-                    const response = await fetch(GOOGLE_SCRIPT_URL);
-                    const data = await response.json();
-                    renderGallery(data);
-                } catch (error) {
-                    console.error('Error fetching data:', error);
-                    // 發生錯誤時保留原本的 Loading 骨架或顯示錯誤訊息，這裡選擇顯示錯誤訊息
-                    galleryContainer.innerHTML = '<p class="text-center w-full col-span-3 text-stone-500">目前無法載入案例，請稍後再試。</p>';
-                }
-            }
-
-            function renderGallery(cases) {
-                // 清空 Loading 骨架
-                galleryContainer.innerHTML = '';
-
-                // 如果沒有資料
-                if (!cases || cases.length === 0) {
-                    galleryContainer.innerHTML = '<p class="text-center w-full col-span-3 text-stone-500">目前尚無案例分享。</p>';
-                    return;
-                }
-
-                cases.forEach((item, index) => {
-                    // 根據資料欄位名稱 (假設 Google Sheet 第一列為這些名稱)
-                    // 案件編號, 案件名稱, 服務類別, 地點, 坪數, 風格, 完工日期, 封面圖連結, 設計理念, 標籤
-                    
-                    // 處理標籤: 將逗號分隔的字串轉為 HTML
-                    let tagsHtml = '';
-                    if (item['標籤']) {
-                        const tags = item['標籤'].toString().split(/[,,、]/); // 支援逗號或頓號分隔
-                        tagsHtml = tags.map(tag => `<span class="bg-stone-100 px-2 py-1 rounded">#${tag.trim()}</span>`).join('');
-                    }
-
-                    // 判斷是否需要跨欄 (例如每三個的第二個跨兩欄，或是隨機，這裡做簡單的順序展示)
-                    // 為了保持簡單與 RWD，這裡先統一使用標準卡片，若要特殊跨欄可依 index 判斷
-                    const isLarge = false; // 可依需求開啟 index % 3 === 1; 
-
-                    // 處理圖片連結：若無圖片則使用 Placeholder
-                    const imgUrl = item['封面圖連結'] ? item['封面圖連結'] : 'https://via.placeholder.com/600x400?text=No+Image';
-
-                    const cardHtml = `
-                    <div class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 card-hover fade-in visible flex flex-col ${isLarge ? 'lg:col-span-2 flex-row' : ''}">
-                        <div class="relative h-64 ${isLarge ? 'md:h-auto md:w-1/2' : ''} overflow-hidden">
-                            <img src="${imgUrl}" alt="${item['案件名稱']}" class="w-full h-full object-cover transform hover:scale-110 transition-transform duration-700">
-                            <div class="absolute top-4 left-4 bg-amber-600 text-white text-xs px-3 py-1 rounded-full shadow-md">${item['服務類別'] || '專案'}</div>
-                        </div>
-                        <div class="p-6 ${isLarge ? 'md:w-1/2 flex flex-col justify-center' : 'flex-grow'}">
-                            <h3 class="text-xl font-bold text-stone-800 mb-2">${item['案件名稱']}</h3>
-                            <div class="text-xs text-stone-500 mb-3 flex items-center gap-2 flex-wrap">
-                                <span>${item['地點'] || ''}</span>
-                                ${item['坪數'] ? `<span class="w-1 h-1 bg-stone-300 rounded-full"></span><span>${item['坪數']}</span>` : ''}
-                                ${item['風格'] ? `<span class="w-1 h-1 bg-stone-300 rounded-full"></span><span>${item['風格']}</span>` : ''}
-                            </div>
-                            <p class="text-stone-600 text-sm mb-4 line-clamp-3">${item['設計理念'] || ''}</p>
-                            <div class="flex flex-wrap gap-2 text-xs text-stone-500">
-                                ${tagsHtml}
-                            </div>
+            <!-- Modal Body -->
+            <div class="p-6">
+                <!-- Tags -->
+                <div id="modal-tags" class="flex gap-2 mb-4"></div>
+                
+                <!-- Main Image -->
+                <img id="modal-img-main" src="" alt="" class="w-full h-auto rounded-lg mb-6 object-cover bg-gray-100">
+                
+                <!-- Price Block (Modified to match Card style) -->
+                <div id="modal-price-block" class="flex items-center gap-3 mb-6 p-4 bg-emerald-50 rounded-lg border border-emerald-100">
+                    <div class="flex-1 flex flex-col">
+                        <span id="price-original-container" class="text-gray-400 line-through text-sm">原價 NT$ <span id="modal-price-original">0</span></span>
+                        <div class="flex items-baseline gap-1">
+                            <span class="text-lg font-bold text-red-600">特價</span>
+                            <span class="text-3xl font-bold text-red-600">NT$ <span id="modal-price-sale">0</span></span>
                         </div>
                     </div>
-                    `;
+                </div>
+
+                <!-- Description -->
+                <div id="modal-desc-block" class="mb-8">
+                    <h4 class="font-bold text-gray-700 mb-2 border-l-4 border-emerald-500 pl-2">產品說明</h4>
+                    <p id="modal-desc" class="text-gray-600 leading-relaxed whitespace-pre-line"></p>
+                </div>
+
+                <!-- Detail / Ingredients Images -->
+                <div id="modal-extra-images" class="space-y-4">
+                    <!-- Dynamic Text/Images will be here -->
+                </div>
+            </div>
+
+            <!-- Modal Footer -->
+            <div id="modal-footer" class="p-4 border-t bg-gray-50 text-center">
+                <a href="https://lin.ee/fx7f7sO" target="_blank" class="block w-full bg-[#06C755] hover:bg-[#05b54d] text-white font-bold py-3 px-4 rounded-lg transition shadow-lg">
+                    <i class="fa-brands fa-line mr-2"></i> 洽詢官方 LINE 下單
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // ==========================================
+        // 設定區
+        // ==========================================
+        const USE_MOCK_DATA = false; 
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyuzYeYCbKAD9DSEybvEw1PYdkZni_UFvN6K8GIgvhCkAwpmlhZ1AW-b_0-_RLRpagMFQ/exec';
+
+        // 模擬資料 (備用)
+        const mockData = [
+            { category: '心血管專區', name: '高單位魚油', description: '嚴選深海魚油...', original_price: '1200', sale_price: '980', image_main: 'https://i.meee.com.tw/J4qH81B.png', status: '上架' },
+            { category: '系統', name: '營業時間', description: '', original_price: '', sale_price: '', image_main: 'https://placehold.co/600x400/orange/white?text=Open+Hours', status: '上架' }
+        ];
+
+        // ==========================================
+        // 應用程式邏輯
+        // ==========================================
+        
+        let allProducts = [];
+        let categories = [];
+        let activeCategory = '';
+        let businessHoursData = null; // 儲存營業時間的物件
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initApp();
+            initModal();
+        });
+
+        async function initApp() {
+            try {
+                let data;
+                
+                if (USE_MOCK_DATA) {
+                    await new Promise(resolve => setTimeout(resolve, 600)); 
+                    data = mockData;
+                } else {
+                    data = await fetchSheetDataWithRetry(GOOGLE_SCRIPT_URL);
+                }
+
+                if (!Array.isArray(data)) throw new Error("API 格式錯誤");
+                
+                // 1. 先抓出「營業時間」的資料 (假設名稱為 '營業時間')
+                businessHoursData = data.find(p => p.name && p.name.trim() === '營業時間');
+
+                // 2. 過濾出一般商品 (狀態上架 + 有名稱 + 名稱不是營業時間)
+                allProducts = data.filter(p => 
+                    p.status && 
+                    p.status.trim() === '上架' && 
+                    p.name && 
+                    p.name.trim() !== "" &&
+                    p.name.trim() !== '營業時間'
+                );
+
+                const uniqueCats = [...new Set(allProducts.map(p => p.category ? p.category.trim() : '未分類'))];
+                categories = uniqueCats;
+
+                if (categories.length > 0) {
+                    activeCategory = categories[0];
+                    renderTabs();
+                    renderProducts(activeCategory);
                     
-                    galleryContainer.insertAdjacentHTML('beforeend', cardHtml);
+                    document.getElementById('loading').classList.add('hidden');
+                    document.getElementById('app-content').classList.remove('hidden');
+                } else {
+                    document.getElementById('loading').innerHTML = '<p class="text-gray-500">目前沒有上架商品或資料庫為空</p>';
+                }
+
+            } catch (error) {
+                console.error("初始化錯誤:", error);
+                document.getElementById('loading').classList.add('hidden');
+                const errorMsg = document.getElementById('error-msg');
+                errorMsg.classList.remove('hidden');
+                document.getElementById('error-detail').textContent = `錯誤原因: ${error.message}`;
+            }
+        }
+
+        // 開啟營業時間視窗的函式
+        function openBusinessHours() {
+            if (businessHoursData && businessHoursData.image_main) {
+                openModal(businessHoursData);
+            } else {
+                alert('目前尚未設定連假營業時間表，請直接聯繫藥師或撥打電話確認。');
+            }
+        }
+
+        // ★★★ 改良版 Fetch：自動重試 + 防止快取 ★★★
+        async function fetchSheetDataWithRetry(url, retries = 3) {
+            if (!url || url.includes('您的_APPS_SCRIPT')) {
+                throw new Error("尚未設定 Google Apps Script 網址");
+            }
+
+            for (let i = 0; i < retries; i++) {
+                try {
+                    const cacheBuster = url + (url.includes('?') ? '&' : '?') + 't=' + new Date().getTime();
+                    
+                    const response = await fetch(cacheBuster, {
+                        method: "GET",
+                        redirect: "follow"
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    
+                    const json = await response.json();
+                    return json; 
+
+                } catch (err) {
+                    console.warn(`第 ${i + 1} 次嘗試失敗...`, err);
+                    const loadingText = document.getElementById('loading-text');
+                    if(loadingText) loadingText.textContent = `連線忙碌中，正在重試 (${i+1}/${retries})...`;
+
+                    if (i === retries - 1) throw err; 
+                    await new Promise(r => setTimeout(r, 1500));
+                }
+            }
+        }
+
+        function renderTabs() {
+            const container = document.getElementById('category-container');
+            container.innerHTML = '';
+
+            categories.forEach(cat => {
+                const btn = document.createElement('button');
+                btn.className = `whitespace-nowrap px-5 py-2 rounded-full text-sm font-bold transition-all duration-300 border-2 ${
+                    cat === activeCategory 
+                    ? 'bg-emerald-100 text-emerald-700 border-emerald-500 shadow-sm' 
+                    : 'bg-white text-gray-600 border-transparent hover:bg-gray-100'
+                }`;
+                btn.textContent = cat;
+                btn.onclick = () => {
+                    activeCategory = cat;
+                    renderTabs();
+                    renderProducts(cat);
+                };
+                container.appendChild(btn);
+            });
+        }
+
+        function renderProducts(category) {
+            const grid = document.getElementById('product-grid');
+            const emptyState = document.getElementById('empty-category');
+            grid.innerHTML = '';
+            
+            const filtered = allProducts.filter(p => (p.category ? p.category.trim() : '未分類') === category);
+
+            if (filtered.length === 0) {
+                grid.classList.add('hidden');
+                emptyState.classList.remove('hidden');
+                return;
+            }
+
+            grid.classList.remove('hidden');
+            emptyState.classList.add('hidden');
+
+            filtered.forEach((product, index) => {
+                const card = createProductCard(product);
+                card.style.animationDelay = `${index * 50}ms`; 
+                card.classList.add('animate-fade-in-up'); 
+                grid.appendChild(card);
+            });
+        }
+
+        function createProductCard(product) {
+            const div = document.createElement('div');
+            div.className = 'bg-white rounded-xl shadow-sm hover:shadow-lg transition-shadow duration-300 overflow-hidden group cursor-pointer border border-gray-100 flex flex-col h-full opacity-0 fill-mode-forwards';
+            div.onclick = () => openModal(product);
+
+            let tagsHtml = '';
+            if (product.tags) {
+                const tags = product.tags.split(/,|、/);
+                tags.forEach(tag => {
+                    if(tag.trim()) tagsHtml += `<span class="bg-red-500 text-white text-[10px] px-2 py-1 rounded-sm shadow-sm">${tag.trim()}</span>`;
                 });
             }
 
-            // 啟動讀取
-            fetchGalleryData();
-        });
+            const imgSrc = product.image_main ? product.image_main : 'https://placehold.co/400x400/eee/999?text=No+Image';
+
+            div.innerHTML = `
+                <div class="relative overflow-hidden aspect-square bg-gray-100">
+                    <img src="${imgSrc}" alt="${product.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                    <div class="absolute top-2 left-2 flex gap-1 flex-wrap">
+                        ${tagsHtml}
+                    </div>
+                </div>
+                <div class="p-4 flex flex-col flex-grow">
+                    <h3 class="font-bold text-gray-800 text-lg mb-1 line-clamp-1">${product.name}</h3>
+                    <p class="text-sm text-gray-500 mb-3 line-clamp-2 flex-grow h-10">${product.description || ''}</p>
+                    
+                    <div class="mt-auto pt-3 border-t border-gray-100 flex items-center justify-between">
+                        <div class="flex flex-col">
+                            <span class="text-xs text-gray-400 line-through">原價 $${product.original_price}</span>
+                            <span class="text-xl font-bold text-red-600">特價 $${product.sale_price}</span>
+                        </div>
+                        <button class="bg-emerald-50 text-emerald-600 w-8 h-8 rounded-full flex items-center justify-center hover:bg-emerald-500 hover:text-white transition-colors shadow-sm">
+                            <i class="fa-solid fa-magnifying-glass-plus"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+            return div;
+        }
+
+        // Modal 邏輯
+        function initModal() {
+            const modal = document.getElementById('product-modal');
+            const overlay = modal.querySelector('.modal-overlay');
+            const closeBtn = modal.querySelector('.modal-close');
+            const toggleModal = () => {
+                modal.classList.toggle('opacity-0');
+                modal.classList.toggle('pointer-events-none');
+                document.body.classList.toggle('modal-active');
+            };
+            overlay.addEventListener('click', toggleModal);
+            closeBtn.addEventListener('click', toggleModal);
+        }
+
+        function openModal(product) {
+            const modal = document.getElementById('product-modal');
+            const footer = document.getElementById('modal-footer');
+
+            // 判斷是否為「營業時間」頁面
+            if (product.name && product.name.trim() === '營業時間') {
+                footer.classList.add('hidden'); // 隱藏按鈕區域
+            } else {
+                footer.classList.remove('hidden'); // 一般商品則顯示
+            }
+
+            document.getElementById('modal-title').textContent = product.name;
+            
+            // 處理說明文字
+            const descBlock = document.getElementById('modal-desc-block');
+            if (product.description && product.description.trim() !== '') {
+                descBlock.classList.remove('hidden');
+                document.getElementById('modal-desc').textContent = product.description;
+            } else {
+                descBlock.classList.add('hidden');
+            }
+
+            // 處理價格顯示
+            const priceBlock = document.getElementById('modal-price-block');
+            if (product.sale_price || product.original_price) {
+                priceBlock.classList.remove('hidden');
+                document.getElementById('modal-price-sale').textContent = product.sale_price || '0';
+                
+                const originalPriceContainer = document.getElementById('price-original-container');
+                if (product.original_price) {
+                    originalPriceContainer.classList.remove('hidden');
+                    document.getElementById('modal-price-original').textContent = product.original_price;
+                } else {
+                    originalPriceContainer.classList.add('hidden');
+                }
+            } else {
+                priceBlock.classList.add('hidden');
+            }
+            
+            document.getElementById('modal-img-main').src = product.image_main || 'https://placehold.co/600x600/eee/999?text=No+Image';
+
+            const tagsContainer = document.getElementById('modal-tags');
+            tagsContainer.innerHTML = '';
+            if (product.tags) {
+                const tags = product.tags.split(/,|、/);
+                tags.forEach(tag => {
+                    if(tag.trim()) {
+                        const span = document.createElement('span');
+                        span.className = 'bg-emerald-100 text-emerald-700 text-xs px-2 py-1 rounded-full font-medium border border-emerald-200';
+                        span.textContent = tag.trim();
+                        tagsContainer.appendChild(span);
+                    }
+                });
+            }
+
+            const extraContainer = document.getElementById('modal-extra-images');
+            extraContainer.innerHTML = '';
+
+            // 修改處：處理「詳細介紹」，改為文字顯示，樣式與產品說明一致
+            if (product.image_detail && product.image_detail.trim() !== '') {
+                 const detailWrapper = document.createElement('div');
+                 detailWrapper.className = 'mb-8'; // 保持間距一致
+                 detailWrapper.innerHTML = `
+                    <h4 class="font-bold text-gray-700 mb-2 border-l-4 border-emerald-500 pl-2">詳細介紹</h4>
+                    <p class="text-gray-600 leading-relaxed whitespace-pre-line">${product.image_detail}</p>
+                 `;
+                 extraContainer.appendChild(detailWrapper);
+            }
+
+            const addImage = (url, title) => {
+                if (!url) return;
+                const wrapper = document.createElement('div');
+                wrapper.innerHTML = `
+                    <p class="text-sm text-gray-500 mb-2 mt-4 font-bold border-b pb-1 flex items-center gap-2">
+                        <i class="fa-regular fa-image text-emerald-500"></i> ${title}
+                    </p>
+                    <img src="${url}" class="w-full rounded-lg shadow-sm border bg-white" loading="lazy">
+                `;
+                extraContainer.appendChild(wrapper);
+            };
+            
+            // 成分圖依然保持圖片顯示
+            addImage(product.ingredients, '成份與營養標示');
+
+            modal.classList.remove('opacity-0');
+            modal.classList.remove('pointer-events-none');
+            document.body.classList.add('modal-active');
+        }
     </script>
 </body>
 </html>
